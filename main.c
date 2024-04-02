@@ -18,15 +18,15 @@ contendo informação da posição e usuário;
 #define POSICOES_PLACAR 10
 
 //inicio
-//struct para os movimentos do pc, dados do placar e dos dados do usuario.
+//struct para os movimentos do pc.
 struct Move{
   int linha, coluna;
 };
-
+//struct para os dados do placar.
 struct Placar{
   int vitorias, derrotas, velhas;
 };
-
+//struct para os dados do usuario.
 struct Jogador {
   char nome[20];
   int pontuacao;
@@ -834,9 +834,6 @@ int creditos(){
 
     printf("Jogo criado e desenvolvido por: \n");
     printf("\nNome/RGM - Robert Emanuel             /31162509");
-    printf("\nNome/RGM - Brenno José Vaz C. Lacerda /29407583");
-    printf("\nNome/RGM - Nicolas Matias Dantas      /29984106");
-    printf("\nNome/RGM - João Vitor F. de Souza     /31719660");
     
   printf("\n\nSelecione 1 para voltar: ");
   scanf("%d", &sair);  

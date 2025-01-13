@@ -837,7 +837,7 @@ int creditos(){
     printf("\n.......... Créditos ..........\n\n");
 
     printf("Jogo criado e desenvolvido por: \n");
-    printf("\nNome/RGM - Robert Emanuel             /31162509");
+    printf("\nNome/RGM - Robert Emanuel             /********");
     
   printf("\n\nSelecione 1 para voltar: ");
   scanf("%d", &sair);  

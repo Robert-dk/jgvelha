@@ -1,5 +1,9 @@
 /******************************************************************************************************************
- 
+ * Jogo da Velha
+ * Autor: Robert Emanuel
+ * Data de Criação: 23-10-2023
+ * Versão: 4.0
+ * Descrição:
 Jogo da velha (3X3 OU 4X4);
 a) Apenas um tabuleiro 3x3 (ou 5x5)
 b) Caso não exista o segundo jogador, o computador deve assumir a posição do

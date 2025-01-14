@@ -1,6 +1,6 @@
 # Jogo da Velha em C
 
-Este é um jogo da velha simples desenvolvido em linguagem C, onde você pode jogar contra outro jogador ou contra o computador. O jogo possui um tabuleiro de 3x3 ou 5x5, dependendo da sua escolha.
+Este é um jogo da velha simples desenvolvido em linguagem C, onde você pode jogar contra outro jogador ou contra o computador. O jogo possui um tabuleiro de 3x3
 
 ## Funcionalidades
 

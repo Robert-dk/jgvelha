@@ -4,7 +4,7 @@ Este é um jogo da velha simples desenvolvido em linguagem C, onde você pode jo
 
 ## Funcionalidades
 
-- **Tabuleiro 3x3 ou 5x5:** Escolha o tamanho do tabuleiro antes de iniciar o jogo.
+- **Tabuleiro 3x3**.
 - **Jogador vs Jogador ou Jogador vs Computador:** Se não houver um segundo jogador, o computador assumirá a posição do oponente.
 - **Ranking:** Mantém um registro dos jogadores e seus desempenhos em um arquivo.
 - **Menu Interativo:** Opções de Jogar, Ver Ranking, Créditos e Sair.

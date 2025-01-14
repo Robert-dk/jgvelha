@@ -37,6 +37,33 @@ struct Jogador {
   int peca;
 };
 
+// Protótipos das funções (Mova TODAS as suas funções para cá)
+int single();
+int multi();
+int Ranking();
+int creditos();
+int submenu1();
+void dadosUsuario(struct Jogador *, struct Placar *);
+void mostrarUsuario(struct Jogador *);
+void redefinirTabuleiro(int a[3][3]);
+void rodadaInit(int (*tabuleiro)[3], int, struct Placar *);
+void inserirRanking(struct Jogador);
+int calculaPontuacao(struct Placar);
+void desenharTabuleiro(int (*tabuleiro)[3]);
+void rodadaJogador(int (*tabuleiro)[3], int);
+char converteNumero(int);
+void efetuarJogada(int tabuleiro[3][3], int linha, int coluna, int jogador);
+int verificaJogada(int tab[3][3], int x, int y);
+int verificaVencedor(int tabuleiro[3][3], int jogador);
+int existemPossibilidades(int tabuleiro[3][3]);
+void jogadaBot(int tabuleiro[3][3], int bot);
+int minimax(int tabuleiro[3][3], int profundidade, int isMax, int jogador); // Protótipo correto
+int avaliaJogada(int tabuleiro[3][3], int jogador);
+struct Move movimentoBot(int tabuleiro[3][3], int jogador);
+void mostrarPlacar(struct Placar placar);
+int mostrarUsuarioRanking(struct Jogador jogador);
+void ordenarVetor(struct Jogador jogadores[POSICOES_PLACAR], int ranking_total);
+
 //inicio do MENU do jogo
 int main(void) {
 
@@ -44,7 +71,7 @@ int main(void) {
   int multi();
   int Ranking();
   int creditos();
-  
+
   int valor;
 
   do{ 
@@ -82,19 +109,19 @@ int submenu1(){
  switch(tipo2){
      case 1: printf("\n\n.......... Você escolheu o modo Singleplayer ..........\n"); single(); break;
      case 2: printf("\n\n.......... Você escolheu o modo Multiplayer ..........\n"); multi(); break;
-     
+
      default: printf("coloque o valor correto respectivo ao menu que quer selecionar!\n"); submenu1();
  }
 }
 //modo singleplayer x bot pc
 int single(){
-  
+
   void dadosUsuario(struct Jogador *, struct Placar *);
   void mostrarUsuario(struct Jogador *);
   void redefinirTabuleiro(int a[3][3]);
   void rodadaInit(int (*tabuleiro)[3], int, struct Placar *);
   void inserirRanking(struct Jogador);
-  
+
   int calculaPontuacao(struct Placar);
 
   int tabuleiro[3][3];  //Variavel que cria o tabuleiro
@@ -104,7 +131,7 @@ int single(){
 
   //preencher dados do usuario
   dadosUsuario(&jogador, &placar);
-  
+
   //Loop das rodadas até jogador desejar sair
   do{ 
     system("clear");
@@ -175,7 +202,7 @@ void rodadaInit(int tabuleiro[3][3], int jogador, struct Placar *placar){
 
   int existemPossibilidades(int (*tabuleiro)[3]);
   int verificaVencedor(int (*tabuleiro)[3], int);
-  
+
   void jogadaBot(int (*tabuleiro)[3], int);
 
   int bot = jogador == 1?-1:1; //Define qual será a peca do bot a partir da escolha do jogador
@@ -233,7 +260,7 @@ void rodadaInit(int tabuleiro[3][3], int jogador, struct Placar *placar){
 void rodadaJogador(int tabuleiro[3][3], int jogador){
   int verificaJogada(int (*tab)[3], int, int);
   void efetuarJogada(int (*tab)[3],int, int, int);
-  
+
   int linha, coluna;
 
   //Loop para o usuario definir uma jogada correta
@@ -304,17 +331,17 @@ void efetuarJogada(int tabuleiro[3][3], int linha, int coluna, int jogador){
 
 //verificar se esta disponivel, sendo 1 ou 0
 int verificaJogada(int tab[3][3], int x, int y) {
-  if(x >= 0 && y >= 0 && x <= 3 && y<= 3){
-    if(tab[x][y] == 0){
-       return 1;
+    if (x >= 0 && y >= 0 && x < 3 && y < 3) { // Correção: x < 3 e y < 3
+        if (tab[x][y] == 0) {
+            return 1;
+        }
     }
-  }
-  return 0;
+    return 0;
 }
 
 //Verifica se existe um vencedor
 int verificaVencedor(int tabuleiro[3][3], int jogador){
-  
+
    // Verificando as linhas para decidir se há um vencedor.
    if (tabuleiro[0][0]==jogador 
       && tabuleiro[0][1]==jogador 
@@ -390,76 +417,87 @@ void jogadaBot(int tabuleiro[3][3], int bot){
 
   efetuarJogada(tabuleiro, jogadaBot.linha, jogadaBot.coluna, bot);
 } 
- 
+
 //escolhe um caminho possivel para seguir
-int minimax(int tabuleiro[3][3], int isMax, int jogador){
-  int avaliaJogada(int (*tabuleiro)[3], int);
+int minimax(int tabuleiro[3][3], int profundidade, int isMax, int jogador) {
+    int avaliaJogada(int (*tabuleiro)[3], int);
+    int existemPossibilidades(int tabuleiro[3][3]);
 
-  int pontuacaoJogada = avaliaJogada(tabuleiro, jogador);
+    int pontuacao = avaliaJogada(tabuleiro, jogador);
 
-  // Se o Maximizer ganhou o jogo, devolver a pontuação avaliada
-  if (pontuacaoJogada == 10){
-    return pontuacaoJogada;
-  }  
-  // Se o Minimizer ganhou o jogo, devolver pontuação avaliada
-  if (pontuacaoJogada == -10){
-    return pontuacaoJogada;
-  }
+    // Casos base da recursão
+    if (pontuacao == 10) {
+        return pontuacao - profundidade; // Ajuste para preferir vitórias mais rápidas
+    }
+    if (pontuacao == -10) {
+        return pontuacao + profundidade; // Ajuste para evitar derrotas mais lentas
+    }
+    if (!existemPossibilidades(tabuleiro)) {
+        return 0; // Empate
+    }
 
-  if (existemPossibilidades(tabuleiro)){
-    return 0;
-  }
-  // Se não houver mais movimentos e nenhum vencedor, é velha
+    if (isMax) {
+        int melhor = -1000;
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (tabuleiro[i][j] == 0) {
+                    tabuleiro[i][j] = jogador;
+                    int valor = minimax(tabuleiro, profundidade + 1, !isMax, jogador);
+                    tabuleiro[i][j] = 0; // Desfaz o movimento
+                    if (valor > melhor) {
+                        melhor = valor;
+                    }
+                }
+            }
+        }
+        return melhor;
+    } else { // Minimizar
+        int melhor = 1000;
+        int outroJogador = (jogador == 1) ? -1 : 1; // Obtém o jogador adversário
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (tabuleiro[i][j] == 0) {
+                    tabuleiro[i][j] = outroJogador;
+                    int valor = minimax(tabuleiro, profundidade + 1, !isMax, jogador);
+                    tabuleiro[i][j] = 0; // Desfaz o movimento
+                    if (valor < melhor) {
+                        melhor = valor;
+                    }
+                }
+            }
+        }
+        return melhor;
+    }
+}
 
-  if (isMax == 1)
-  {
-      int melhor = -1000;
+//struct para escolher o melhor movimento para o bot
+struct Move movimentoBot(int tabuleiro[3][3], int jogador) {
+    int minimax(int tabuleiro[3][3], int profundidade, int isMax, int jogador);
+    int verificaJogada(int (*tab)[3], int, int);
 
-      // Percorre todos os caminhos
-      for (int i = 0; i<3; i++)
-      {
-          for (int j = 0; j<3; j++)
-          {
-              // Verifique se o caminho está vazio
-              if (tabuleiro[i][j]== 0)
-              {
-                  // Fazer o movimento
-                  tabuleiro[i][j] = jogador;
+    int melhorValor = -1000;
+    struct Move melhorMovimento;
+    melhorMovimento.linha = -1;
+    melhorMovimento.coluna = -1;
+    int outroJogador = (jogador == 1) ? -1 : 1;
 
-                  melhor =  minimax(tabuleiro, !isMax, jogador);
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (tabuleiro[i][j] == 0) {
+                tabuleiro[i][j] = jogador;
+                int valorMovimento = minimax(tabuleiro, 0, 0, jogador); // Chamada corrigida
+                tabuleiro[i][j] = 0;
 
-                  // Desfaz o movimento
-                  tabuleiro[i][j] =  0;
-              }
-          }
-      }
-      return melhor;
-  }
+                if (valorMovimento > melhorValor) {
+                    melhorMovimento.linha = i;
+                    melhorMovimento.coluna = j;
+                    melhorValor = valorMovimento;
+                }
+            }
+        }
+    }
 
-  //Se o minimizador se mover
-  else
-  {
-      int melhor = 1000;
-
-      // Percorre todos os caminhos
-      for (int i = 0; i<3; i++)
-      {
-          for (int j = 0; j<3; j++)
-          {
-            // Verifique se o caminho está vazio
-              if (tabuleiro[i][j]== 0)
-              {
-                  // fazer o movimento
-                  tabuleiro[i][j] = jogador == 1 ? -1: 1;
-  
-                  melhor =  minimax(tabuleiro, !isMax, jogador);
-
-                  tabuleiro[i][j] =  0;
-              }
-          }
-      }
-      return melhor;
-  }
+    return melhorMovimento;
 }
 
 //Esse função avalia se a jogada irá resultar chances de vitoria ou derrota 
@@ -511,196 +549,96 @@ int avaliaJogada(int tabuleiro[3][3], int jogador){
   return 0;
 }
 
-//struct para escolher o melhor movimento para o bot
-struct Move movimentoBot(int tabuleiro[3][3], int jogador){
-  int verificaJogada(int (*tab)[3], int, int);
+int multi() {
+    void dadosUsuario(struct Jogador *, struct Placar *);
+    void mostrarUsuario(struct Jogador *);
+    void redefinirTabuleiro(int a[3][3]);
+    void rodadaInit(int (*tabuleiro)[3], int, struct Placar *);
+    void inserirRanking(struct Jogador);
+    int calculaPontuacao(struct Placar);
 
-  int pontuacaoJogada = -1000;
-  struct Move melhorMovimento;
-  melhorMovimento.linha = -1;
-  melhorMovimento.coluna = -1;
+    int tabuleiro[3][3];
+    int valor;
+    struct Jogador jogador1, jogador2; // Agora temos dois jogadores
+    struct Placar placar1, placar2;
 
-  //Percorrer todas os caminhos, avalia a função minimax para todas os caminhos vazios. 
-  //em conjunto retornar o melhor caminho
-  for (int i = 0; i<3; i++)
-  {
-      for (int j = 0; j<3; j++)
-      {
-          // Verifique se o caminho está vazio
-          if (tabuleiro[i][j]== 0)
-          {
-              //fazer omovimento
-              tabuleiro[i][j] = jogador;
-              // computar função de avaliação para mover
-              int moveVal = minimax(tabuleiro, 0, jogador);
+    system("clear");
+    printf("\n.......... Modo Multiplayer ..........\n");
 
-              // Desfaz o movimento
-              tabuleiro[i][j] =  0;
+    printf("\nDados do Jogador 1:\n");
+    dadosUsuario(&jogador1, &placar1);
 
-              // Se o caminho atual for melhor que o avaliado, refaça o movimento
-              if (moveVal > pontuacaoJogada)
-              {
-                  melhorMovimento.linha = i;
-                  melhorMovimento.coluna = j;
-                  pontuacaoJogada = moveVal;
-              }
-          }
-      }
-  }
+    system("clear");
+    printf("\n.......... Modo Multiplayer ..........\n");
+    printf("\nDados do Jogador 2:\n");
+    dadosUsuario(&jogador2, &placar2);
 
-  //Caso não tenha uma melhor jogada, sera definido uma posição aleatoria
-  if(pontuacaoJogada == 0){
-    do{
-      melhorMovimento.linha = rand()%3;
-      melhorMovimento.coluna = rand()%3;
-    }while(!verificaJogada(tabuleiro, melhorMovimento.linha,melhorMovimento.coluna));
-  }
+    // Ajuste para garantir que as peças sejam diferentes
+    while (jogador1.peca == jogador2.peca) {
+        printf("\nJogador 2, sua peça deve ser diferente da do Jogador 1.\n");
+        dadosUsuario(&jogador2, &placar2);
+    }
 
-  return melhorMovimento;
-}
 
-int multi(){
+    do {
+        system("clear");
+        redefinirTabuleiro(tabuleiro);
 
- 
-    // inicio
-    int l, c, linha, coluna, jogador, ganhou, jogadas, opcao, sair;
-    char jogo[3][3];
+        // Define quem começa aleatoriamente
+        int jogadorAtual = (rand() % 2 == 0) ? 1 : 2;
 
-    do{ 
-        jogador = 1;
-        ganhou = 0;
-        jogadas = 0;
-        
-        for(l = 0; l < 3; l++){
-            for(c = 0; c < 3; c++){
-                jogo[l][c] = ' ';
-            }
-        }
-
-        do{ 
-            printf("\n.......... Bem vindo ao jogo da velha em C ..........\n");
-            printf("\nJogador 1 = 0\nJogador 2 = X\n\n");
-            printf("\n\n\t 0   1   2\n\n");
-            for(l = 0; l < 3; l++){
-                for(c = 0; c < 3; c++){
-                    if(c == 0)
-                        printf("\t");
-                    printf(" %c ", jogo[l][c]);
-                    if(c < 2)
-                        printf("|");
-                    if(c == 2)
-                        printf("  %d", l);
+        while (existemPossibilidades(tabuleiro)) {
+            system("clear");
+            desenharTabuleiro(tabuleiro);
+            if (jogadorAtual == 1) {
+                printf("\nVez de %s (Jogador 1 - %c):\n", jogador1.nome, converteNumero(jogador1.peca));
+                rodadaJogador(tabuleiro, jogador1.peca);
+                if(verificaVencedor(tabuleiro, jogador1.peca)){
+                    printf("\n%s (Jogador 1) Venceu!\n", jogador1.nome);
+                    placar1.vitorias++;
+                    placar2.derrotas++;
+                    break;
                 }
-                if(l < 2)
-                    printf("\n\t-----------");
-                printf("\n");
+            } else {
+                printf("\nVez de %s (Jogador 2 - %c):\n", jogador2.nome, converteNumero(jogador2.peca));
+                rodadaJogador(tabuleiro, jogador2.peca);
+                if(verificaVencedor(tabuleiro, jogador2.peca)){
+                     printf("\n%s (Jogador 2) Venceu!\n", jogador2.nome);
+                    placar2.vitorias++;
+                    placar1.derrotas++;
+                    break;
+                }
             }
-
-            // processamento
-            do{
-                printf("\nJogador %dº, Digite a linha que deseja jogar: ", jogador);
-                scanf("%d", &linha);
-                printf("\nJogador %dº, Digite a coluna que deseja jogar: ", jogador);
-                scanf("%d", &coluna);
-            }while(linha < 0 || linha > 2 || coluna < 0 || coluna > 2 || jogo[linha][coluna] != ' ');
-
-            
-            if(jogador == 1){
-                jogo[linha][coluna] = '0';
-                jogador++;
-            }
-            else{
-                jogo[linha][coluna] = 'X';
-                jogador = 1;
-            }
-            jogadas++;
-
-            //saida
-            if(jogo[0][0] == '0' && jogo[0][1] == '0' && jogo[0][2] == '0' ||
-               jogo[1][0] == '0' && jogo[1][1] == '0' && jogo[1][2] == '0' ||
-               jogo[2][0] == '0' && jogo[2][1] == '0' && jogo[2][2] == '0'){
-                printf("\nParabéns!!! a vitória é sua jogador 1\n");
-                ganhou = 1;
-            }
-
-            if(jogo[0][0] == 'X' && jogo[0][1] == 'X' && jogo[0][2] == 'X' ||
-               jogo[1][0] == 'X' && jogo[1][1] == 'X' && jogo[1][2] == 'X' ||
-               jogo[2][0] == 'X' && jogo[2][1] == 'X' && jogo[2][2] == 'X'){
-                printf("\nParabéns!!! a vitória é sua jogador 2\n");
-                ganhou = 1;
-            }
-
-            
-            if(jogo[0][0] == '0' && jogo[1][0] == '0' && jogo[2][0] == '0' ||
-               jogo[0][1] == '0' && jogo[1][1] == '0' && jogo[2][1] == '0' ||
-               jogo[0][2] == '0' && jogo[1][2] == '0' && jogo[2][2] == '0'){
-                printf("\nParabéns!!! a vitória é sua jogador 1\n");
-                ganhou = 1;
-            }
-
-            if(jogo[0][0] == 'X' && jogo[1][0] == 'X' && jogo[2][0] == 'X' ||
-               jogo[0][1] == 'X' && jogo[1][1] == 'X' && jogo[2][1] == 'X' ||
-               jogo[0][2] == 'X' && jogo[1][2] == 'X' && jogo[2][2] == 'X'){
-                printf("\nParabéns!!! a vitória é sua jogador 2\n");
-                ganhou = 1;
-            }
-
-            
-            if(jogo[0][0] == '0' && jogo[1][1] == '0' && jogo[2][2] == '0'){
-                printf("\nParabéns!!! a vitória é sua jogador 1\n");
-                ganhou = 1;
-            }
-
-            if(jogo[0][0] == 'X' && jogo[1][1] == 'X' && jogo[2][2] == 'X'){
-                printf("\nParabéns!!! a vitória é sua jogador 2\n");
-                ganhou = 1;
-            }
-
-            
-            if(jogo[0][2] == '0' && jogo[1][1] == '0' && jogo[2][0] == '0'){
-                printf("\nParabéns!!! a vitória é sua jogador 1\n");
-                ganhou = 1;
-            }
-
-            if(jogo[0][2] == 'X' && jogo[1][1] == 'X' && jogo[2][0] == 'X'){
-                printf("\nParabéns!!! a vitória é sua jogador 2\n");
-                ganhou = 1;
-            }
-        } while(ganhou == 0 && jogadas < 9);
-
-        
-        printf("\n\n\t 0   1   2\n\n");
-        for(l = 0; l < 3; l++){
-            for(c = 0; c < 3; c++){
-                if(c == 0)
-                    printf("\t");
-                printf(" %c ", jogo[l][c]);
-                if(c < 2)
-                    printf("|");
-                if(c == 2)
-                    printf("  %d", l);
-            }
-            if(l < 2)
-                printf("\n\t-----------");
-            printf("\n");
+            jogadorAtual = (jogadorAtual == 1) ? 2 : 1; // Alterna os jogadores
         }
 
-        if(ganhou == 0)
-            printf("\nDeu Velha! \n");
-            
-        printf("\nDigite 1 para jogar novamente e 2 para voltar ao MENU: ");
-        scanf("%d", &opcao);
-    }while(opcao == 1);
- 
-  scanf("%d", &sair);  
+        if(!verificaVencedor(tabuleiro, jogador1.peca) && !verificaVencedor(tabuleiro, jogador2.peca)){
+             printf("\nDeu Velha!\n");
+             placar1.velhas++;
+             placar2.velhas++;
+        }
+        desenharTabuleiro(tabuleiro);
 
+        jogador1.pontuacao = calculaPontuacao(placar1);
+        jogador2.pontuacao = calculaPontuacao(placar2);
 
-  return 0;
-  }
- 
+        mostrarUsuario(&jogador1);
+        mostrarUsuario(&jogador2);
+
+        printf("\n1. Continuar\n2. Voltar ao Menu\n");
+        printf("Escolha uma opção: ");
+        scanf("%d", &valor);
+
+    } while (valor != 2);
+
+    inserirRanking(jogador1);
+    inserirRanking(jogador2);
+
+    return 0;
+}
 //Inicia a Visualização do Ranking, fazendo a leitura do arquivo e apresentando ao usuario
 int Ranking(){
-  
+
   void ordenarVetor(struct Jogador *jogadores, int);
   int mostrarUsuarioRanking(struct Jogador);
 
@@ -720,7 +658,7 @@ int Ranking(){
 
   //abrindo o arquivo somente para leitura
   arquivo = fopen("placar.txt", "r");
-  
+
   //caso tiver um erro na abertura do arquivo ele não executa as operações
   if(arquivo == NULL){
       printf("\nErro ao abrir o arquivo!\n");
@@ -728,7 +666,7 @@ int Ranking(){
 
     //enquanto não for fim de arquivo o looping será executado e será impresso o texto
     while(fscanf(arquivo, "%s %d", nome, &pontuacao)!=EOF){
-  
+
       strcpy(jogadores[ranking_total].nome, nome);
       jogadores[ranking_total].pontuacao = pontuacao;
       ranking_total++;
@@ -794,7 +732,7 @@ void mostrarUsuario(struct Jogador *jogador){
 
 //Apresenta os dados do usuario
 int mostrarUsuarioRanking(struct Jogador jogador){
-  
+
   for(int i = 0; i < strlen(jogador.nome); i++){
     if((jogador.nome[i] < 'a' && jogador.nome[i] > 'z') || (jogador.nome[i] < 'A' && jogador.nome[i] > 'Z') ||  
     (jogador.pontuacao > 10000) || (jogador.pontuacao < 0)){
@@ -832,13 +770,13 @@ int calculaPontuacao(struct Placar placar){
 
 int creditos(){
     int sair;
-    
 
-    printf("\n.......... Créditos ..........\n\n");
 
-    printf("Jogo criado e desenvolvido por: \n");
+    printf("\n .......... Créditos .......... \n\n");
+
+    printf("  Jogo criado e desenvolvido por:  \n");
     printf("\nNome/RGM - Robert Emanuel             /********");
-    
+
   printf("\n\nSelecione 1 para voltar: ");
   scanf("%d", &sair);  
 
